@@ -64,8 +64,8 @@ function App() {
 
   return (
     <div className="container">
-      <Create />
-      {/* <ReactTable data = {data} columns = {columns}/> */}
+      {/* <Create /> */}
+      <ReactTable data = {data} columns = {columns}/>
     </div>
   )
 }
