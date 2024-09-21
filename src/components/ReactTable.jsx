@@ -11,9 +11,7 @@ import mdata from "../MOCK_DATA.json";
 import { DateTime } from "luxon";
 import { Tooltip } from "react-tooltip";
 
-export default function ReactTable({data, columns}) {
-
-
+export default function ReactTable({ data, columns }) {
   const [sorting, setSorting] = useState([]);
   const [filtering, setFiltering] = useState("");
 
