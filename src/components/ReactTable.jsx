@@ -42,30 +42,32 @@ export default function ReactTable({ data, columns }) {
         />
       </div>
       <table className="w3-table-all">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th
-                key={header.id}
-                onClick={header.column.getToggleSortingHandler()}
-              >
-                {header.isPlaceholder ? null : (
-                  <div>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {
-                      { asc: "🔼", desc: "🔽" }[
-                        header.column.getIsSorted() ?? null
-                      ]
-                    }
-                  </div>
-                )}
-              </th>
-            ))}
-          </tr>
-        ))}
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {header.isPlaceholder ? null : (
+                    <div>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {
+                        { asc: "🔼", desc: "🔽" }[
+                          header.column.getIsSorted() ?? null
+                        ]
+                      }
+                    </div>
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>

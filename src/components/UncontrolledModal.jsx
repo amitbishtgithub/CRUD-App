@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "reactstrap";
 
-const UncontrolledModal = ({ target, ...modalProps }) => {
+const UncontrolledModal = ({ target, onClose, ...modalProps }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -25,9 +25,12 @@ const UncontrolledModal = ({ target, ...modalProps }) => {
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
+    if (onClose && isOpen) {
+      onClose(); 
+    }
   };
 
   return <Modal {...modalProps} isOpen={isOpen} toggle={toggleModal} />;
 };
 
-export { UncontrolledModal };
+export default UncontrolledModal;
