@@ -7,10 +7,14 @@ import Add from "./Add";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { ModalBody, ModalFooter, ModalHeader, Button, Modal } from "reactstrap";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function TableWithPaginate() {
   const [apiData, setApiData] = useState([]);
   const [selectedData, setSelectedData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const data = useMemo(() => mdata, []);
 
@@ -18,7 +22,6 @@ export default function TableWithPaginate() {
     axios
       .get("https://66eeee593ed5bb4d0bf25f1f.mockapi.io/crud")
       .then((response) => {
-        // console.log(response.data)
         setApiData(response.data);
       });
   };
@@ -28,22 +31,24 @@ export default function TableWithPaginate() {
   }, []);
 
   const deleteData = (rowId) => {
+    // console.log("Row data received for deletion:", rowId);
     setSelectedData(rowId);
-    document.getElementById("deleteModal").click();
+    setIsModalOpen(true);
   };
 
   const handleDelete = () => {
+    // console.log("Deleting ID:", selectedData);
     axios
       .delete(
         `https://66eeee593ed5bb4d0bf25f1f.mockapi.io/crud/${selectedData}`
       )
       .then(() => {
         getdata();
-        document.getElementById("closeModal").click();
+        setIsModalOpen(false);
+        toast.success(<h4>Data Deleted Successfully!</h4>)
       });
   };
 
-  /** @type import('@tanstack/react-table').ColumnDef<any>*/
   const columns = [
     {
       header: "First Name",
@@ -100,7 +105,6 @@ export default function TableWithPaginate() {
     <div style={{ position: "relative" }}>
       <div style={{ position: "absolute", top: 0, right: "10%", zIndex: 1 }}>
         <button
-          // onClick={handleAddClick}
           style={{
             paddingBottom: "5px",
             backgroundColor: "#007bff",
@@ -115,27 +119,34 @@ export default function TableWithPaginate() {
       </div>
       <ReactTable data={apiData} columns={columns} />
 
+      {/* Add Modal */}
       <UncontrolledModal target="add" size="lg">
         <Add />
       </UncontrolledModal>
 
-      <button id="deleteModal" hidden></button>
-      <UncontrolledModal
-        target="deleteModal"
-        size="md"
-        // onClose={() => setSelectedData(null)}
-      >
-        <ModalHeader>Delete</ModalHeader>
-        <ModalBody >Are You sure you want to delete this data!</ModalBody>
-        <ModalFooter>
-          <Button color="secondary" id="closeModal" size="sm">
-          <i className="fa-solid fa-close"></i> Cancel
-          </Button>
-          <Button onClick={handleDelete} color="danger" size="sm">
-            <i className="fa-solid fa-check"></i> Delete
-          </Button>
-        </ModalFooter>
-      </UncontrolledModal>
+      {/* Delete Modal - Using state to control this modal */}
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} toggle={() => setIsModalOpen(false)}>
+          <ModalHeader>Delete</ModalHeader>
+          <ModalBody>Are You sure you want to delete this data!</ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} color="danger">
+              Delete
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        draggable
+      />
     </div>
   );
 }
