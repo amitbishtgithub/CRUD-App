@@ -120,7 +120,7 @@ export default function TableWithPaginate() {
       <ReactTable data={apiData} columns={columns} />
 
       {/* Add Modal */}
-      <UncontrolledModal target="add" size="lg">
+      <UncontrolledModal target="add" size="md">
         <Add />
       </UncontrolledModal>
 
