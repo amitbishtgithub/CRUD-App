@@ -7,14 +7,16 @@ import Add from "./Add";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { ModalBody, ModalFooter, ModalHeader, Button, Modal } from "reactstrap";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Edit from "./Edit";
 
 export default function TableWithPaginate() {
   const [apiData, setApiData] = useState([]);
   const [selectedData, setSelectedData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const data = useMemo(() => mdata, []);
 
@@ -22,7 +24,11 @@ export default function TableWithPaginate() {
     axios
       .get("https://66eeee593ed5bb4d0bf25f1f.mockapi.io/crud")
       .then((response) => {
-        setApiData(response.data);
+        const reversedData = response.data.reverse();
+        setApiData(reversedData);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
       });
   };
 
@@ -45,7 +51,7 @@ export default function TableWithPaginate() {
       .then(() => {
         getdata();
         setIsModalOpen(false);
-        toast.success(<h4>Data Deleted Successfully!</h4>)
+        toast.success(<h4>Data Deleted Successfully!</h4>);
       });
   };
 
@@ -80,7 +86,7 @@ export default function TableWithPaginate() {
       header: "Edit",
       accessorKey: "edit",
       cell: (row) => (
-        <button onClick={""}>
+        <button onClick={() => handleEdit(row.row.original)}>
           <i className="fa fa-edit" />
         </button>
       ),
@@ -101,6 +107,11 @@ export default function TableWithPaginate() {
     },
   ];
 
+  const handleEdit = (data) => {
+    setSelectedData(data); // Set the selected data for editing
+    setIsEditModalOpen(true); // Open the edit modal
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <div style={{ position: "absolute", top: 0, right: "10%", zIndex: 1 }}>
@@ -113,6 +124,7 @@ export default function TableWithPaginate() {
             borderRadius: "4px",
           }}
           id="add"
+          onClick={() => setIsAddModalOpen(true)}
         >
           Add <i className="fa-solid fa-plus" />
         </button>
@@ -120,9 +132,27 @@ export default function TableWithPaginate() {
       <ReactTable data={apiData} columns={columns} />
 
       {/* Add Modal */}
-      <UncontrolledModal target="add" size="md">
-        <Add />
-      </UncontrolledModal>
+      <Modal isOpen={isAddModalOpen} toggle={() => setIsAddModalOpen(false)}>
+        <Add
+          onAddSuccess={() => {
+            getdata();
+            setIsAddModalOpen(false); // Close the add modal after success
+          }}
+          closeModal={() => setIsAddModalOpen(false)} // Ensure closeModal closes the modal
+        />
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal isOpen={isEditModalOpen} toggle={() => setIsEditModalOpen(false)}>
+        <Edit
+          selectedData={selectedData}
+          onEditSuccess={() => {
+            getdata();
+            setIsEditModalOpen(false);
+          }}
+          closeModal={() => setIsEditModalOpen(false)}
+        />
+      </Modal>
 
       {/* Delete Modal - Using state to control this modal */}
       {isModalOpen && (
